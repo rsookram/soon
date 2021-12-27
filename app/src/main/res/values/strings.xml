@@ -1,0 +1,8 @@
+<resources>
+
+    <string name="app_name">soon</string>
+
+    <string name="toolbar_up_description">Navigate up</string>
+    <string name="view_more_options">More options</string>
+
+</resources>

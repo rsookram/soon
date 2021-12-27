@@ -1,0 +1,31 @@
+[versions]
+accompanist = "0.20.3"
+compose = "1.0.5"
+coroutines = "1.6.0"
+hilt = "2.40.5"
+
+[libraries]
+accompanist-insets = { module = "com.google.accompanist:accompanist-insets", version.ref = "accompanist" }
+accompanist-insetsUi = { module = "com.google.accompanist:accompanist-insets-ui", version.ref = "accompanist" }
+accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
+
+agp = { module = "com.android.tools.build:gradle", version = "7.0.4" }
+
+androidx-core = { module = "androidx.core:core-ktx", version = "1.7.0" }
+androidx-activity = { module = "androidx.activity:activity-compose", version = "1.4.0" }
+androidx-hiltNavigationCompose = { module = "androidx.hilt:hilt-navigation-compose", version = "1.0.0-rc01" }
+androidx-viewmodelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.4.0" }
+androidx-navigation = { module = "androidx.navigation:navigation-compose", version = "2.4.0-rc01" }
+
+compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
+compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
+
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+
+hilt-gradle = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
+
+kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version = "1.5.31" }

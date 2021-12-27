@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.github.rsookram.soon">
+
+    <application
+        android:name=".App"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Soon"
+        android:allowBackup="true"
+        android:fullBackupContent="true">
+
+        <!-- TODO: Check if this needs to be exported -->
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|uiMode|colorMode|locale"
+            android:exported="true" />
+    </application>
+</manifest>

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+./gradlew --parallel clean assembleRelease lintRelease

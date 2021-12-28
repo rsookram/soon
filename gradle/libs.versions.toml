@@ -3,6 +3,7 @@ accompanist = "0.20.3"
 compose = "1.0.5"
 coroutines = "1.6.0"
 hilt = "2.40.5"
+wire = "4.0.1"
 
 [libraries]
 accompanist-insets = { module = "com.google.accompanist:accompanist-insets", version.ref = "accompanist" }
@@ -29,3 +30,6 @@ hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt"
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version = "1.5.31" }
+
+wire-runtime = { module = "com.squareup.wire:wire-runtime", version.ref = "wire" }
+wire-gradle = { module = "com.squareup.wire:wire-gradle-plugin", version.ref = "wire" }

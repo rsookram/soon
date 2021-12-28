@@ -9,6 +9,7 @@ buildscript {
         classpath(libs.kotlin.gradle)
 
         classpath(libs.hilt.gradle)
+        classpath(libs.wire.gradle)
     }
 }
 

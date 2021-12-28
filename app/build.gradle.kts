@@ -4,6 +4,13 @@ plugins {
     id("kotlin-kapt")
 
     id("dagger.hilt.android.plugin")
+    id("com.squareup.wire")
+}
+
+wire {
+    kotlin {
+        android = true
+    }
 }
 
 android {
@@ -98,6 +105,8 @@ dependencies {
     implementation(libs.accompanist.insets)
     implementation(libs.accompanist.insetsUi)
     implementation(libs.accompanist.systemuicontroller)
+
+    implementation(libs.wire.runtime)
 
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)

@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+option java_package = "io.github.rsookram.soon";
+
+message Data {
+
+  Agenda agenda = 1;
+
+  // All of the tasks that can be scheduled
+  repeated Task tasks = 2;
+}
+
+message Agenda {
+
+    // The date that the todos should be completed on
+    uint32 date = 1;
+
+    repeated Todo todos = 2;
+}
+
+message Todo {
+
+  Task task = 1;
+
+  bool isComplete = 2;
+}
+
+message Task {
+
+  // User-facing name
+  string name = 1;
+
+  oneof schedule {
+    // On this date
+    uint32 date = 2;
+
+    // Bitfield representing a set of days of the week
+    uint32 daysOfWeek = 3;
+
+    // Every n days starting from date
+    IntervalFromDate nDaysFromDate = 4;
+
+    // Every nth of the month, one-indexed
+    uint32 nthDayOfMonth = 5;
+  }
+}
+
+message IntervalFromDate {
+
+  uint32 interval = 1;
+
+  uint32 date = 2;
+}

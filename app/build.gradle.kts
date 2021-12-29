@@ -106,6 +106,8 @@ dependencies {
     implementation(libs.accompanist.insetsUi)
     implementation(libs.accompanist.systemuicontroller)
 
+    implementation(libs.datastore)
+
     implementation(libs.wire.runtime)
 
     implementation(libs.coroutines.core)

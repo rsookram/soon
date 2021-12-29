@@ -35,5 +35,5 @@ class Scheduler @Inject constructor() {
         }
 }
 
-private operator fun DaysOfWeek.contains(dayOfWeek: DayOfWeek): Boolean =
+operator fun DaysOfWeek.contains(dayOfWeek: DayOfWeek): Boolean =
     this and (1 shl (dayOfWeek.value - 1)) > 0

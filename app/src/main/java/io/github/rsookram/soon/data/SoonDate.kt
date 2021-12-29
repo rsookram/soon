@@ -20,3 +20,8 @@ fun LocalDate.toSoonDate(): SoonDate {
     // TODO: Error if overflow
     return ChronoUnit.DAYS.between(epoch, this).toInt()
 }
+
+fun SoonDate.toLocalDate(): LocalDate {
+    val epoch = LocalDate.of(2021, 12, 17)
+    return epoch.plusDays(this.toLong())
+}

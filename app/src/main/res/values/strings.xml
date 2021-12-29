@@ -5,4 +5,14 @@
     <string name="toolbar_up_description">Navigate up</string>
     <string name="view_more_options">More options</string>
 
+    <string name="list_of_scheduled_tasks_title">Schedule</string>
+
+    <string name="create_new_task">Create new task</string>
+    <plurals name="every_n_days_from_date">
+        <item quantity="one">Every %1$d day from %2$s</item>
+        <item quantity="other">Every %1$d days from %2$s</item>
+    </plurals>
+    <string name="every_nth_day_of_month">Every %1$s day of the month</string>
+    <string name="day_of_week_separator">,</string>
+
 </resources>

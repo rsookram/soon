@@ -66,26 +66,34 @@ class Repository @Inject constructor(
             val agenda = data.agenda ?: defaultAgenda()
 
             if (agenda.date == clock.todayAsSoonDate()) {
-                // See if there's anything new to add to today
+                // See if anything changed for today
                 val tasksForToday = data.tasks.filter { scheduler.shouldSchedule(it, today) }
 
-                val existingTasks = agenda.todos.mapNotNull(Todo::task)
-                val tasksToAdd = tasksForToday.filter { it !in existingTasks }
+                val existingTodos = agenda.todos
 
                 data.copy(
                     agenda = agenda.copy(
-                        todos = agenda.todos + tasksToAdd.map(::Todo)
+                        todos = tasksForToday.map { task ->
+                            val existing = existingTodos.find { it.task == task }
+                            Todo(task, existing?.isComplete ?: false)
+                        }
                     )
                 )
             } else {
-                // Move incomplete tasks, and set tasks for current date
-                val incompleteTasks = agenda.todos.filterNot(Todo::isComplete).mapNotNull(Todo::task)
+                val (completeTodos, incompleteTodos) = agenda.todos.partition(Todo::isComplete)
+
+                // These tasks were scheduled for a specific date and completed. Remove them from
+                // the existing tasks.
+                val finishedTasks = completeTodos.filter { it.task?.date != null }.map(Todo::task)
+
+                // Incomplete tasks get scheduled to the next day.
+                val incompleteTasks = incompleteTodos.mapNotNull(Todo::task)
                 val (tasksToUpdate, tasksToReschedule) = incompleteTasks.partition { it.date != null }
 
                 val todaySoonDate = today.toSoonDate()
 
                 val updatedTasks =
-                    data.tasks.filter { it !in tasksToUpdate } +
+                    data.tasks.filterNot { it in tasksToUpdate || it in finishedTasks } +
                             tasksToUpdate.map { it.copy(date = it.date!! + 1) } +
                             tasksToReschedule.map { Task(it.name, date = todaySoonDate) }
 

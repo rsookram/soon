@@ -1,7 +1,11 @@
 package io.github.rsookram.soon.taskdetails
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -9,9 +13,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.LocalWindowInsets
@@ -20,13 +27,16 @@ import com.google.accompanist.insets.ui.TopAppBar
 import io.github.rsookram.soon.R
 import io.github.rsookram.soon.Task
 import io.github.rsookram.soon.ui.OverflowMenu
-import java.util.*
+import java.time.LocalDate
+import java.time.OffsetTime
 
 @Composable
 fun TaskDetails(
     task: Task,
     scheduledFor: String,
+    initialDateSelection: LocalDate,
     onNameChange: (String) -> Unit,
+    onDateSelect: (LocalDate) -> Unit,
     onUpClick: () -> Unit,
     onConfirmClick: (() -> Unit)?,
     onDeleteClick: (() -> Unit)?,
@@ -89,13 +99,7 @@ fun TaskDetails(
             Text(scheduledFor)
 
             // on date (date >= today)
-            Text(
-                stringResource(R.string.schedule_on_date),
-                Modifier
-                    .fillMaxWidth()
-                    .heightIn(56.dp)
-                    .clickable { TODO() },
-            )
+            ScheduleOnDate(initialDateSelection, onDateSelect)
 
             // days of week
             Text(
@@ -125,4 +129,41 @@ fun TaskDetails(
             )
         }
     }
+}
+
+@Composable
+private fun ScheduleOnDate(
+    initialDateSelection: LocalDate,
+    onDateSelect: (LocalDate) -> Unit,
+) {
+    val context = LocalContext.current
+
+    val onDatePickerDialog = remember {
+        DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                onDateSelect(LocalDate.of(year, month + 1, dayOfMonth))
+            },
+            initialDateSelection.year,
+            initialDateSelection.monthValue - 1,
+            initialDateSelection.dayOfMonth,
+        ).apply {
+            datePicker.minDate =
+                initialDateSelection.atTime(OffsetTime.MIN).toInstant().toEpochMilli()
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            onDatePickerDialog.dismiss()
+        }
+    }
+
+    Text(
+        stringResource(R.string.schedule_on_date),
+        Modifier
+            .fillMaxWidth()
+            .heightIn(56.dp)
+            .clickable { onDatePickerDialog.show() },
+    )
 }

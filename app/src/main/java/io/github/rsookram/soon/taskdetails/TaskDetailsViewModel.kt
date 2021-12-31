@@ -12,12 +12,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.rsookram.soon.ApplicationScope
 import io.github.rsookram.soon.Task
 import io.github.rsookram.soon.data.Repository
-import io.github.rsookram.soon.data.todayAsSoonDate
+import io.github.rsookram.soon.data.toSoonDate
 import io.github.rsookram.soon.tasks.localizedSchedule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import okio.ByteString.Companion.decodeBase64
 import java.time.Clock
+import java.time.LocalDate
 import javax.inject.Inject
 
 /**
@@ -34,8 +35,11 @@ class TaskDetailsViewModel @Inject constructor(
     val isCreation: Boolean
     val task: Task
         get() = _task.value
+
     // TODO: Save in saved state handle to handle proc death
     private val _task: MutableState<Task>
+
+    val initialDateSelection: LocalDate = LocalDate.now(clock).plusDays(1)
 
     init {
         val bytes = savedStateHandle.get<String>("base64")?.decodeBase64()
@@ -45,13 +49,22 @@ class TaskDetailsViewModel @Inject constructor(
             if (bytes != null) {
                 Task.ADAPTER.decode(bytes)
             } else {
-                Task(name = "", date = clock.todayAsSoonDate() + 1)
+                Task(name = "", date = initialDateSelection.toSoonDate())
             }
         )
     }
 
     fun onNameChange(newName: String) {
         _task.value = task.copy(name = newName)
+    }
+
+    fun onDateSelect(date: LocalDate) {
+        _task.value = task.copy(
+            date = date.toSoonDate(),
+            daysOfWeek = null,
+            nDaysFromDate = null,
+            nthDayOfMonth = null,
+        )
     }
 
     fun onConfirmClick() {
@@ -81,7 +94,9 @@ fun TaskDetails(navController: NavController, vm: TaskDetailsViewModel = hiltVie
     TaskDetails(
         vm.task,
         vm.task.localizedSchedule(context),
+        vm.initialDateSelection,
         onNameChange = vm::onNameChange,
+        onDateSelect = vm::onDateSelect,
         onUpClick = { navController.popBackStack() },
         // TODO: Pop on confirm / delete
         onConfirmClick = if (vm.task.name.isNotBlank()) vm::onConfirmClick else null,

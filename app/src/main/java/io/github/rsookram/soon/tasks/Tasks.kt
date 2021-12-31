@@ -100,7 +100,7 @@ private fun TaskRow(modifier: Modifier = Modifier, task: Task) {
     }
 }
 
-private fun Task.localizedSchedule(context: Context): String =
+fun Task.localizedSchedule(context: Context): String =
     when {
         date != null -> {
             date.toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))

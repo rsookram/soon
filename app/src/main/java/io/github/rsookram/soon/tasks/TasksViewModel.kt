@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.rsookram.soon.data.Repository
+import io.github.rsookram.soon.navigateToTaskDetails
 import javax.inject.Inject
 
 /**
@@ -25,7 +26,7 @@ class TasksViewModel @Inject constructor(repository: Repository) : ViewModel() {
 fun Tasks(navController: NavController, vm: TasksViewModel = hiltViewModel()) {
     Tasks(
         tasks = vm.tasks.collectAsState(initial = emptyList()).value,
-        onTaskClick = {},
-        onNewTaskClick = {},
+        onTaskClick = navController::navigateToTaskDetails,
+        onNewTaskClick = navController::navigateToTaskDetails,
     )
 }

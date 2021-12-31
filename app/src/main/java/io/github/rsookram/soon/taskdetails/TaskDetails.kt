@@ -1,0 +1,128 @@
+package io.github.rsookram.soon.taskdetails
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
+import com.google.accompanist.insets.ui.TopAppBar
+import io.github.rsookram.soon.R
+import io.github.rsookram.soon.Task
+import io.github.rsookram.soon.ui.OverflowMenu
+import java.util.*
+
+@Composable
+fun TaskDetails(
+    task: Task,
+    scheduledFor: String,
+    onNameChange: (String) -> Unit,
+    onUpClick: () -> Unit,
+    onConfirmClick: (() -> Unit)?,
+    onDeleteClick: (() -> Unit)?,
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {},
+                contentPadding = rememberInsetsPaddingValues(
+                    insets = LocalWindowInsets.current.systemBars,
+                    applyBottom = false,
+                ),
+                navigationIcon = {
+                    IconButton(onClick = onUpClick) {
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.toolbar_up_description),
+                        )
+                    }
+                },
+                actions = {
+                    if (onDeleteClick != null) {
+                        val expanded = rememberSaveable { mutableStateOf(false) }
+
+                        OverflowMenu(expanded) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    expanded.value = false
+                                    onDeleteClick()
+                                }
+                            ) {
+                                Text(stringResource(R.string.delete_task))
+                            }
+                        }
+                    }
+                }
+            )
+        },
+        floatingActionButton = {
+            if (onConfirmClick != null) {
+                FloatingActionButton(onConfirmClick) {
+                    Icon(
+                        Icons.Default.Check,
+                        contentDescription = stringResource(R.string.confirm_changes_to_task),
+                    )
+                }
+            }
+        },
+    ) {
+        Column(Modifier.verticalScroll(rememberScrollState())) {
+            OutlinedTextField(
+                value = task.name,
+                onValueChange = onNameChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                label = { Text(stringResource(R.string.task_name)) },
+            )
+
+            Text(scheduledFor)
+
+            // on date (date >= today)
+            Text(
+                stringResource(R.string.schedule_on_date),
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(56.dp)
+                    .clickable { TODO() },
+            )
+
+            // days of week
+            Text(
+                stringResource(R.string.schedule_by_day_of_week),
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(56.dp)
+                    .clickable { TODO() },
+            )
+
+            // n days from date (n >= 2, date >= today)
+            Text(
+                stringResource(R.string.schedule_every_n_days_from_date),
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(56.dp)
+                    .clickable { TODO() },
+            )
+
+            // nth day of month (1 - 28)
+            Text(
+                stringResource(R.string.schedule_on_nth_day_of_month),
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(56.dp)
+                    .clickable { TODO() },
+            )
+        }
+    }
+}

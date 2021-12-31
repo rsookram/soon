@@ -67,6 +67,17 @@ class TaskDetailsViewModel @Inject constructor(
         )
     }
 
+    fun onNthDayOfMonthSelect(n: Int) {
+        require(n in 1..28)
+
+        _task.value = task.copy(
+            date = null,
+            daysOfWeek = null,
+            nDaysFromDate = null,
+            nthDayOfMonth = n,
+        )
+    }
+
     fun onConfirmClick() {
         applicationScope.launch {
             if (isCreation) {
@@ -97,6 +108,7 @@ fun TaskDetails(navController: NavController, vm: TaskDetailsViewModel = hiltVie
         vm.initialDateSelection,
         onNameChange = vm::onNameChange,
         onDateSelect = vm::onDateSelect,
+        onNthDayOfMonthSelect = vm::onNthDayOfMonthSelect,
         onUpClick = { navController.popBackStack() },
         // TODO: Pop on confirm / delete
         onConfirmClick = if (vm.task.name.isNotBlank()) vm::onConfirmClick else null,

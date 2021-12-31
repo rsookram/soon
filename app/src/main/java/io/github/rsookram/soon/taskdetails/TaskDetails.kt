@@ -12,15 +12,13 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.TopAppBar
@@ -37,6 +35,7 @@ fun TaskDetails(
     initialDateSelection: LocalDate,
     onNameChange: (String) -> Unit,
     onDateSelect: (LocalDate) -> Unit,
+    onNthDayOfMonthSelect: (Int) -> Unit,
     onUpClick: () -> Unit,
     onConfirmClick: (() -> Unit)?,
     onDeleteClick: (() -> Unit)?,
@@ -120,13 +119,7 @@ fun TaskDetails(
             )
 
             // nth day of month (1 - 28)
-            Text(
-                stringResource(R.string.schedule_on_nth_day_of_month),
-                Modifier
-                    .fillMaxWidth()
-                    .heightIn(56.dp)
-                    .clickable { TODO() },
-            )
+            ScheduleEveryNthDayOfMonth(onNthDayOfMonthSelect)
         }
     }
 }
@@ -166,4 +159,37 @@ private fun ScheduleOnDate(
             .heightIn(56.dp)
             .clickable { onDatePickerDialog.show() },
     )
+}
+
+@Composable
+private fun ScheduleEveryNthDayOfMonth(onNthDayOfMonthSelect: (Int) -> Unit) {
+    var showNthDayDialog by rememberSaveable { mutableStateOf(false) }
+
+    Text(
+        stringResource(R.string.schedule_on_nth_day_of_month),
+        Modifier
+            .fillMaxWidth()
+            .heightIn(56.dp)
+            .clickable { showNthDayDialog = true },
+    )
+
+    if (showNthDayDialog) {
+        Dialog(onDismissRequest = { showNthDayDialog = false }) {
+            val minDay = 1
+            val maxDay = 28
+
+            var n by remember { mutableStateOf(minDay) }
+
+            Slider(
+                value = n.toFloat(),
+                onValueChange = { n = it.toInt() },
+                valueRange = minDay.toFloat()..maxDay.toFloat(),
+                // TODO: check for off by one error
+                steps = maxDay - minDay,
+                onValueChangeFinished = {
+                    onNthDayOfMonthSelect(n)
+                },
+            )
+        }
+    }
 }

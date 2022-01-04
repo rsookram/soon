@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.TopAppBar
-import io.github.rsookram.soon.IntervalFromDate
 import io.github.rsookram.soon.R
 import io.github.rsookram.soon.Task
 import io.github.rsookram.soon.data.contains
@@ -112,15 +111,6 @@ fun Task.localizedSchedule(context: Context): String =
                 it.getDisplayName(TextStyle.SHORT, Locale.getDefault())
             }
         }
-        nDaysFromDate != null -> {
-            context.resources.getQuantityString(
-                R.plurals.every_n_days_from_date,
-                nDaysFromDate.interval,
-                nDaysFromDate.interval,
-                nDaysFromDate.date.toLocalDate()
-                    .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
-            )
-        }
         nthDayOfMonth != null -> {
             val ordinal = MessageFormat.format("{0,ordinal}", nthDayOfMonth)
             context.resources.getString(R.string.every_nth_day_of_month, ordinal)
@@ -144,8 +134,6 @@ fun TaskRowPreview() {
 
         TaskRow(task = Task("Second", daysOfWeek = 1))
 
-        TaskRow(task = Task("Third", nDaysFromDate = IntervalFromDate(interval = 3, 2)))
-
-        TaskRow(task = Task("Fourth", nthDayOfMonth = 2))
+        TaskRow(task = Task("Third", nthDayOfMonth = 2))
     }
 }

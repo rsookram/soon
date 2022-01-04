@@ -37,17 +37,7 @@ message Task {
     // Bitfield representing a set of days of the week
     uint32 daysOfWeek = 3;
 
-    // Every n days starting from date
-    IntervalFromDate nDaysFromDate = 4;
-
     // Every nth of the month, one-indexed
-    uint32 nthDayOfMonth = 5;
+    uint32 nthDayOfMonth = 4;
   }
-}
-
-message IntervalFromDate {
-
-  uint32 interval = 1;
-
-  uint32 date = 2;
 }

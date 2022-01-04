@@ -8,17 +8,12 @@
     <string name="list_of_scheduled_tasks_title">Schedule</string>
 
     <string name="create_new_task">Create new task</string>
-    <plurals name="every_n_days_from_date">
-        <item quantity="one">Every %1$d day from %2$s</item>
-        <item quantity="other">Every %1$d days from %2$s</item>
-    </plurals>
     <string name="every_nth_day_of_month">Every %1$s day of the month</string>
     <string name="day_of_week_separator">,</string>
 
     <string name="task_name">Name</string>
     <string name="schedule_on_date">Schedule on date</string>
     <string name="schedule_by_day_of_week">Schedule by day of week</string>
-    <string name="schedule_every_n_days_from_date">Schedule every n days from date</string>
     <string name="schedule_on_nth_day_of_month">Schedule on every nth day of the month</string>
 
     <string name="confirm_changes_to_task">Confirm changes to task</string>

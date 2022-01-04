@@ -65,7 +65,6 @@ class TaskDetailsViewModel @Inject constructor(
         _task.value = task.copy(
             date = date.toSoonDate(),
             daysOfWeek = null,
-            nDaysFromDate = null,
             nthDayOfMonth = null,
         )
     }
@@ -74,7 +73,6 @@ class TaskDetailsViewModel @Inject constructor(
         _task.value = task.copy(
             date = null,
             daysOfWeek = days.toSoonDaysOfWeek(),
-            nDaysFromDate = null,
             nthDayOfMonth = null,
         )
     }
@@ -85,7 +83,6 @@ class TaskDetailsViewModel @Inject constructor(
         _task.value = task.copy(
             date = null,
             daysOfWeek = null,
-            nDaysFromDate = null,
             nthDayOfMonth = n,
         )
     }

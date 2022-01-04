@@ -113,15 +113,6 @@ fun TaskDetails(
             // days of week
             ScheduleOnDaysOfWeek(task.daysOfWeek, onDaysOfWeekSelect)
 
-            // n days from date (n >= 2, date >= today)
-            Text(
-                stringResource(R.string.schedule_every_n_days_from_date),
-                Modifier
-                    .fillMaxWidth()
-                    .heightIn(56.dp)
-                    .clickable { TODO() },
-            )
-
             // nth day of month (1 - 28)
             ScheduleEveryNthDayOfMonth(task.nthDayOfMonth, onNthDayOfMonthSelect)
         }

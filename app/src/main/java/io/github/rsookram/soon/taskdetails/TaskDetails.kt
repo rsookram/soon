@@ -107,6 +107,10 @@ fun TaskDetails(
 
             Text(scheduledFor)
 
+            // TODO: Don't use dialogs for this
+            // have radio buttons to select the schedule type
+            // then below that, show the controls for the currently selected type
+
             // on date (date >= today)
             ScheduleOnDate(task.date, defaultDateSelection, onDateSelect)
 

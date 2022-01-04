@@ -35,7 +35,9 @@ class TaskDetailsViewModel @Inject constructor(
     @ApplicationScope private val applicationScope: CoroutineScope,
 ) : ViewModel() {
 
+    private val originalTask: Task?
     val isCreation: Boolean
+        get() = originalTask == null
     val task: Task
         get() = _task.value
 
@@ -46,7 +48,6 @@ class TaskDetailsViewModel @Inject constructor(
 
     init {
         val bytes = savedStateHandle.get<String>("base64")?.decodeBase64()
-        isCreation = bytes == null
 
         _task = mutableStateOf(
             if (bytes != null) {
@@ -55,6 +56,8 @@ class TaskDetailsViewModel @Inject constructor(
                 Task(name = "", date = initialDateSelection.toSoonDate())
             }
         )
+
+        originalTask = if (bytes == null) null else task
     }
 
     fun onNameChange(newName: String) {
@@ -89,10 +92,10 @@ class TaskDetailsViewModel @Inject constructor(
 
     fun onConfirmClick() {
         applicationScope.launch {
-            if (isCreation) {
-                // TODO: create
+            if (originalTask == null) {
+                repository.addTask(task)
             } else {
-                // TODO: save
+                repository.updateTask(originalTask, task)
             }
         }
     }

@@ -24,6 +24,8 @@ import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.TopAppBar
 import io.github.rsookram.soon.R
 import io.github.rsookram.soon.Task
+import io.github.rsookram.soon.data.SoonDate
+import io.github.rsookram.soon.data.toLocalDate
 import io.github.rsookram.soon.ui.OverflowMenu
 import java.time.LocalDate
 import java.time.OffsetTime
@@ -32,7 +34,7 @@ import java.time.OffsetTime
 fun TaskDetails(
     task: Task,
     scheduledFor: String,
-    initialDateSelection: LocalDate,
+    defaultDateSelection: LocalDate,
     onNameChange: (String) -> Unit,
     onDateSelect: (LocalDate) -> Unit,
     onNthDayOfMonthSelect: (Int) -> Unit,
@@ -98,7 +100,7 @@ fun TaskDetails(
             Text(scheduledFor)
 
             // on date (date >= today)
-            ScheduleOnDate(initialDateSelection, onDateSelect)
+            ScheduleOnDate(task.date, defaultDateSelection, onDateSelect)
 
             // days of week
             Text(
@@ -119,17 +121,20 @@ fun TaskDetails(
             )
 
             // nth day of month (1 - 28)
-            ScheduleEveryNthDayOfMonth(onNthDayOfMonthSelect)
+            ScheduleEveryNthDayOfMonth(task.nthDayOfMonth, onNthDayOfMonthSelect)
         }
     }
 }
 
 @Composable
 private fun ScheduleOnDate(
-    initialDateSelection: LocalDate,
+    taskDate: SoonDate?,
+    defaultDateSelection: LocalDate,
     onDateSelect: (LocalDate) -> Unit,
 ) {
     val context = LocalContext.current
+
+    val initialDate = taskDate?.toLocalDate() ?: defaultDateSelection
 
     val onDatePickerDialog = remember {
         DatePickerDialog(
@@ -137,12 +142,12 @@ private fun ScheduleOnDate(
             { _, year, month, dayOfMonth ->
                 onDateSelect(LocalDate.of(year, month + 1, dayOfMonth))
             },
-            initialDateSelection.year,
-            initialDateSelection.monthValue - 1,
-            initialDateSelection.dayOfMonth,
+            initialDate.year,
+            initialDate.monthValue - 1,
+            initialDate.dayOfMonth,
         ).apply {
             datePicker.minDate =
-                initialDateSelection.atTime(OffsetTime.MIN).toInstant().toEpochMilli()
+                defaultDateSelection.atTime(OffsetTime.MIN).toInstant().toEpochMilli()
         }
     }
 
@@ -162,7 +167,10 @@ private fun ScheduleOnDate(
 }
 
 @Composable
-private fun ScheduleEveryNthDayOfMonth(onNthDayOfMonthSelect: (Int) -> Unit) {
+private fun ScheduleEveryNthDayOfMonth(
+    taskNthDayOfMonth: Int?,
+    onNthDayOfMonthSelect: (Int) -> Unit
+) {
     var showNthDayDialog by rememberSaveable { mutableStateOf(false) }
 
     Text(
@@ -178,7 +186,7 @@ private fun ScheduleEveryNthDayOfMonth(onNthDayOfMonthSelect: (Int) -> Unit) {
             val minDay = 1
             val maxDay = 28
 
-            var n by remember { mutableStateOf(minDay) }
+            var n by remember { mutableStateOf(taskNthDayOfMonth ?: minDay) }
 
             Slider(
                 value = n.toFloat(),

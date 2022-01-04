@@ -105,7 +105,7 @@ fun TaskDetails(navController: NavController, vm: TaskDetailsViewModel = hiltVie
     TaskDetails(
         vm.task,
         vm.task.localizedSchedule(context),
-        vm.initialDateSelection,
+        defaultDateSelection = vm.initialDateSelection,
         onNameChange = vm::onNameChange,
         onDateSelect = vm::onDateSelect,
         onNthDayOfMonthSelect = vm::onNthDayOfMonthSelect,

@@ -106,11 +106,7 @@ fun Task.localizedSchedule(context: Context): String =
             date.toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
         }
         daysOfWeek != null -> {
-            val firstDayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek
-
-            val week = (DayOfWeek.values() + DayOfWeek.values()).dropWhile { it != firstDayOfWeek }.take(7)
-
-            val days = week.filter { it in daysOfWeek }
+            val days = getLocalizedWeek().filter { it in daysOfWeek }
 
             days.joinToString(separator = context.getString(R.string.day_of_week_separator)) {
                 it.getDisplayName(TextStyle.SHORT, Locale.getDefault())
@@ -133,6 +129,12 @@ fun Task.localizedSchedule(context: Context): String =
             throw IllegalStateException("Unknown schedule for $this")
         }
     }
+
+fun getLocalizedWeek(locale: Locale = Locale.getDefault()): List<DayOfWeek> {
+    val firstDayOfWeek = WeekFields.of(locale).firstDayOfWeek
+
+    return (DayOfWeek.values() + DayOfWeek.values()).dropWhile { it != firstDayOfWeek }.take(7)
+}
 
 @Preview
 @Composable

@@ -1,11 +1,9 @@
 package io.github.rsookram.soon.taskdetails
 
 import android.app.DatePickerDialog
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -15,8 +13,11 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.google.accompanist.insets.LocalWindowInsets
@@ -24,11 +25,17 @@ import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.TopAppBar
 import io.github.rsookram.soon.R
 import io.github.rsookram.soon.Task
+import io.github.rsookram.soon.data.DaysOfWeek
 import io.github.rsookram.soon.data.SoonDate
+import io.github.rsookram.soon.data.toEnumSet
 import io.github.rsookram.soon.data.toLocalDate
+import io.github.rsookram.soon.tasks.getLocalizedWeek
 import io.github.rsookram.soon.ui.OverflowMenu
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.OffsetTime
+import java.time.format.TextStyle
+import java.util.*
 
 @Composable
 fun TaskDetails(
@@ -37,6 +44,7 @@ fun TaskDetails(
     defaultDateSelection: LocalDate,
     onNameChange: (String) -> Unit,
     onDateSelect: (LocalDate) -> Unit,
+    onDaysOfWeekSelect: (EnumSet<DayOfWeek>) -> Unit,
     onNthDayOfMonthSelect: (Int) -> Unit,
     onUpClick: () -> Unit,
     onConfirmClick: (() -> Unit)?,
@@ -103,13 +111,7 @@ fun TaskDetails(
             ScheduleOnDate(task.date, defaultDateSelection, onDateSelect)
 
             // days of week
-            Text(
-                stringResource(R.string.schedule_by_day_of_week),
-                Modifier
-                    .fillMaxWidth()
-                    .heightIn(56.dp)
-                    .clickable { TODO() },
-            )
+            ScheduleOnDaysOfWeek(task.daysOfWeek, onDaysOfWeekSelect)
 
             // n days from date (n >= 2, date >= today)
             Text(
@@ -164,6 +166,77 @@ private fun ScheduleOnDate(
             .heightIn(56.dp)
             .clickable { onDatePickerDialog.show() },
     )
+}
+
+@Composable
+private fun ScheduleOnDaysOfWeek(
+    taskDaysOfWeek: DaysOfWeek?,
+    onDaysOfWeekSelect: (EnumSet<DayOfWeek>) -> Unit
+) {
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+
+    Text(
+        stringResource(R.string.schedule_by_day_of_week),
+        Modifier
+            .fillMaxWidth()
+            .heightIn(56.dp)
+            .clickable { showDialog = true },
+    )
+
+    if (showDialog) {
+        val selectedDays = taskDaysOfWeek?.toEnumSet() ?: EnumSet.noneOf(DayOfWeek::class.java)
+
+        Dialog(onDismissRequest = { showDialog = false }) {
+            Week(
+                selectedDays,
+                onDayClick = { day ->
+                    selectedDays.toggle(day)
+                    onDaysOfWeekSelect(selectedDays)
+                },
+            )
+        }
+    }
+}
+
+private fun EnumSet<DayOfWeek>.toggle(day: DayOfWeek) {
+    if (!add(day)) {
+        remove(day)
+    }
+}
+
+@Composable
+private fun Week(selectedDays: EnumSet<DayOfWeek>, onDayClick: (DayOfWeek) -> Unit) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+        getLocalizedWeek().forEach { day ->
+            Text(
+                day.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
+                Modifier
+                    .clickable { onDayClick(day) }
+                    .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                    .background(
+                        if (day in selectedDays) {
+                            MaterialTheme.colors.primary
+                        } else {
+                            Color.Transparent
+                        }
+                    ),
+                color = if (day in selectedDays) MaterialTheme.colors.onPrimary else MaterialTheme.colors.onSurface,
+                style = MaterialTheme.typography.h5,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun WeekPreview() {
+    Box(Modifier.background(MaterialTheme.colors.surface)) {
+        Week(
+            selectedDays = EnumSet.of(DayOfWeek.MONDAY, DayOfWeek.THURSDAY),
+            onDayClick = {},
+        )
+    }
 }
 
 @Composable

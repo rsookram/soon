@@ -13,12 +13,15 @@ import io.github.rsookram.soon.ApplicationScope
 import io.github.rsookram.soon.Task
 import io.github.rsookram.soon.data.Repository
 import io.github.rsookram.soon.data.toSoonDate
+import io.github.rsookram.soon.data.toSoonDaysOfWeek
 import io.github.rsookram.soon.tasks.localizedSchedule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import okio.ByteString.Companion.decodeBase64
 import java.time.Clock
+import java.time.DayOfWeek
 import java.time.LocalDate
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -67,6 +70,15 @@ class TaskDetailsViewModel @Inject constructor(
         )
     }
 
+    fun onDaysOfWeekSelect(days: EnumSet<DayOfWeek>) {
+        _task.value = task.copy(
+            date = null,
+            daysOfWeek = days.toSoonDaysOfWeek(),
+            nDaysFromDate = null,
+            nthDayOfMonth = null,
+        )
+    }
+
     fun onNthDayOfMonthSelect(n: Int) {
         require(n in 1..28)
 
@@ -108,6 +120,7 @@ fun TaskDetails(navController: NavController, vm: TaskDetailsViewModel = hiltVie
         defaultDateSelection = vm.initialDateSelection,
         onNameChange = vm::onNameChange,
         onDateSelect = vm::onDateSelect,
+        onDaysOfWeekSelect = vm::onDaysOfWeekSelect,
         onNthDayOfMonthSelect = vm::onNthDayOfMonthSelect,
         onUpClick = { navController.popBackStack() },
         // TODO: Pop on confirm / delete

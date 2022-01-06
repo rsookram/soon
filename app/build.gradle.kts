@@ -102,6 +102,9 @@ dependencies {
     implementation(libs.compose.material)
     implementation(libs.compose.uiTooling)
 
+    implementation(libs.glance.core)
+    implementation(libs.glance.appwidget)
+
     implementation(libs.accompanist.insets)
     implementation(libs.accompanist.insetsUi)
     implementation(libs.accompanist.systemuicontroller)

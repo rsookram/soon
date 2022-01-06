@@ -2,6 +2,7 @@
 accompanist = "0.20.3"
 compose = "1.0.5"
 coroutines = "1.6.0"
+glance = "1.0.0-alpha01"
 hilt = "2.40.5"
 wire = "4.0.1"
 
@@ -26,6 +27,9 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 
 datastore = { module = "androidx.datastore:datastore", version = "1.0.0" }
+
+glance-core = { module = "androidx.glance:glance", version.ref = "glance" }
+glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
 
 hilt-gradle = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }

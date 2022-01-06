@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Update period is 3 hours -->
+<appwidget-provider
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="128dp"
+    android:minHeight="64dp"
+    android:resizeMode="vertical|horizontal"
+    android:minResizeWidth="128dp"
+    android:minResizeHeight="64dp"
+    android:updatePeriodMillis="10800000"/>

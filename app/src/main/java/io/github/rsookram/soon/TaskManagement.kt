@@ -11,10 +11,10 @@ import io.github.rsookram.soon.taskdetails.TaskDetails
 import io.github.rsookram.soon.tasks.Tasks
 
 /**
- * The entry point into the UI, implemented in compose.
+ * The entry point into the UI which allows the user to manage their tasks / schedule.
  */
 @Composable
-fun Main() {
+fun TaskManagement() {
     val navController = rememberNavController()
 
     NavHost(navController, startDestination = "tasks") {

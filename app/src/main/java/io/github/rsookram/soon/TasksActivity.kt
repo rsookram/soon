@@ -16,10 +16,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.github.rsookram.soon.ui.theme.AppTheme
 
 /**
- * The single Activity which displays the UI for the app.
+ * The Activity which allows the user to manage their tasks / schedule. See [TaskManagement].
  */
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class TasksActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
 
                 SideEffect { systemUiController.applyTheme(isLight) }
 
-                ProvideWindowInsets { Surface(color = MaterialTheme.colors.background) { Main() } }
+                ProvideWindowInsets { Surface(color = MaterialTheme.colors.background) { TaskManagement() } }
             }
         }
     }

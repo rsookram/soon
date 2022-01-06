@@ -14,7 +14,7 @@
 
         <!-- TODO: Check if this needs to be exported -->
         <activity
-            android:name=".MainActivity"
+            android:name=".TasksActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|uiMode|colorMode|locale"
             android:exported="true" />
     </application>

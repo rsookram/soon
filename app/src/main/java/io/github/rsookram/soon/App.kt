@@ -39,14 +39,16 @@ annotation class ApplicationScope
 class App : Application() {
 
     @Inject lateinit var repository: Repository
-    @Inject @ApplicationScope lateinit var scope: CoroutineScope
+    @Inject lateinit var widget: SoonWidget
+    @Inject @ApplicationScope
+    lateinit var scope: CoroutineScope
 
     override fun onCreate() {
         super.onCreate()
 
         scope.launch {
             repository.agenda.collect {
-                SoonWidget().updateAll(this@App)
+                widget.updateAll(this@App)
             }
         }
     }

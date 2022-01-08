@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.TopAppBar
 import io.github.rsookram.soon.R
@@ -86,7 +87,10 @@ fun TaskDetails(
         },
         floatingActionButton = {
             if (onConfirmClick != null) {
-                FloatingActionButton(onConfirmClick) {
+                FloatingActionButton(
+                    onConfirmClick,
+                    Modifier.navigationBarsWithImePadding(),
+                ) {
                     Icon(
                         Icons.Default.Check,
                         contentDescription = stringResource(R.string.confirm_changes_to_task),

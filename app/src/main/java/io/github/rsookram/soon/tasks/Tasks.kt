@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.TopAppBar
 import io.github.rsookram.soon.R
@@ -52,7 +53,10 @@ fun Tasks(tasks: List<Task>, onTaskClick: (Task) -> Unit, onNewTaskClick: () -> 
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onNewTaskClick) {
+            FloatingActionButton(
+                onNewTaskClick,
+                Modifier.navigationBarsPadding(),
+            ) {
                 Icon(
                     Icons.Default.Create,
                     contentDescription = stringResource(R.string.create_new_task),

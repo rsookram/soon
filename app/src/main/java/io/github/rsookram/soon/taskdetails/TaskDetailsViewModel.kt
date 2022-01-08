@@ -123,8 +123,21 @@ fun TaskDetails(navController: NavController, vm: TaskDetailsViewModel = hiltVie
         onDaysOfWeekSelect = vm::onDaysOfWeekSelect,
         onNthDayOfMonthSelect = vm::onNthDayOfMonthSelect,
         onUpClick = { navController.popBackStack() },
-        // TODO: Pop on confirm / delete
-        onConfirmClick = if (vm.task.name.isNotBlank()) vm::onConfirmClick else null,
-        onDeleteClick = if (vm.isCreation) vm::onDeleteClick else null,
+        onConfirmClick = if (vm.task.name.isNotBlank()) {
+            {
+                vm.onConfirmClick()
+                navController.popBackStack()
+            }
+        } else {
+            null
+        },
+        onDeleteClick = if (!vm.isCreation) {
+            {
+                vm.onDeleteClick()
+                navController.popBackStack()
+            }
+        } else {
+            null
+        },
     )
 }

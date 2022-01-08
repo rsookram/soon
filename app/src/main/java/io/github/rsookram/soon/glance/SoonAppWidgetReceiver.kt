@@ -17,7 +17,11 @@ import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import io.github.rsookram.soon.Todo
 import io.github.rsookram.soon.data.Repository
 import kotlinx.coroutines.flow.first
@@ -65,6 +69,12 @@ class SoonWidget @Inject constructor(private val repository: Repository) : Glanc
 
 class CheckBoxClickAction : ActionCallback {
 
+    @InstallIn(SingletonComponent::class)
+    @EntryPoint
+    interface Dependencies {
+        fun repository(): Repository
+    }
+
     override suspend fun onRun(
         context: Context,
         glanceId: GlanceId,
@@ -72,6 +82,8 @@ class CheckBoxClickAction : ActionCallback {
     ) {
         val todo = Todo.ADAPTER.decode(parameters[toggledTodoIdKey]!!)
 
-        // TODO: toggleComplete
+        val entryPoint = EntryPointAccessors.fromApplication<Dependencies>(context)
+
+        entryPoint.repository().toggleComplete(todo)
     }
 }

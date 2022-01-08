@@ -24,7 +24,7 @@ class Repository @Inject constructor(
     suspend fun toggleComplete(todo: Todo) {
         dataStore.updateData { data ->
             data.copy(
-                agenda = Agenda(
+                agenda = (data.agenda ?: defaultAgenda()).copy(
                     todos = (data.agenda ?: defaultAgenda()).todos.map {
                         if (it == todo) {
                             it.copy(isComplete = !it.isComplete)

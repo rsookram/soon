@@ -8,6 +8,8 @@ import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionParametersOf
+import androidx.glance.action.actionStartActivity
+import androidx.glance.action.clickable
 import androidx.glance.appwidget.CheckBox
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
@@ -17,18 +19,23 @@ import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
+import androidx.glance.text.Text
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import io.github.rsookram.soon.ApplicationScope
+import io.github.rsookram.soon.TasksActivity
 import io.github.rsookram.soon.Todo
 import io.github.rsookram.soon.data.Repository
+import io.github.rsookram.soon.data.toLocalDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -66,6 +73,15 @@ class SoonWidget @Inject constructor(private val repository: Repository) : Glanc
         val agenda = runBlocking { repository.agenda.first() }
 
         LazyColumn(GlanceModifier.fillMaxSize().padding(16.dp)) {
+            item {
+                val date = agenda.date.toLocalDate()
+                val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+                Text(
+                    "✏️ ${date.format(formatter)}",
+                    GlanceModifier.clickable(actionStartActivity(TasksActivity::class.java)),
+                )
+            }
+
             items(agenda.todos) { todo ->
                 CheckBox(
                     checked = todo.isComplete,

@@ -18,6 +18,7 @@ import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.layout.fillMaxSize
+import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
 import androidx.glance.text.Text
 import dagger.hilt.EntryPoint
@@ -72,6 +73,10 @@ class SoonWidget @Inject constructor(private val repository: Repository) : Glanc
     override fun Content() {
         val agenda = runBlocking { repository.agenda.first() }
 
+        // Hack to force action parameters to be updated
+        // https://issuetracker.google.com/issues/213861535#comment2
+        Text("")
+
         LazyColumn(GlanceModifier.fillMaxSize().padding(16.dp)) {
             item {
                 val date = agenda.date.toLocalDate()
@@ -90,6 +95,7 @@ class SoonWidget @Inject constructor(private val repository: Repository) : Glanc
                             toggledTodoIdKey to Todo.ADAPTER.encode(todo)
                         ),
                     ),
+                    modifier = GlanceModifier.fillMaxWidth(),
                     text = todo.task!!.name,
                 )
             }

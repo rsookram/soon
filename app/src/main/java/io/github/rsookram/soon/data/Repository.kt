@@ -41,12 +41,16 @@ class Repository @Inject constructor(
         dataStore.updateData { data ->
             data.copy(tasks = data.tasks + task)
         }
+
+        refreshAgenda()
     }
 
     suspend fun removeTask(task: Task) {
         dataStore.updateData { data ->
             data.copy(tasks = data.tasks - task)
         }
+
+        refreshAgenda()
     }
 
     suspend fun updateTask(oldTask: Task, newTask: Task) {
@@ -57,6 +61,8 @@ class Repository @Inject constructor(
                 }
             )
         }
+
+        refreshAgenda()
     }
 
     suspend fun refreshAgenda() {

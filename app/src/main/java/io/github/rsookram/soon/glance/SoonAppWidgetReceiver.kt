@@ -2,24 +2,25 @@ package io.github.rsookram.soon.glance
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
+import android.content.res.Configuration
+import android.os.Build
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.LocalContext
 import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
-import androidx.glance.appwidget.CheckBox
-import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import androidx.glance.appwidget.*
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
-import androidx.glance.layout.fillMaxSize
-import androidx.glance.layout.fillMaxWidth
-import androidx.glance.layout.padding
+import androidx.glance.background
+import androidx.glance.layout.*
 import androidx.glance.text.Text
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -77,7 +78,16 @@ class SoonWidget @Inject constructor(private val repository: Repository) : Glanc
         // https://issuetracker.google.com/issues/213861535#comment2
         Text("")
 
-        LazyColumn(GlanceModifier.fillMaxSize().padding(16.dp)) {
+        // TODO: Reuse AppTheme
+        val isDarkTheme = isWidgetInDarkTheme()
+        LazyColumn(
+            GlanceModifier
+                .fillMaxSize()
+                .background(if (isDarkTheme) Color(0xFF212121) else Color.White)
+                .appWidgetBackground()
+                .appWidgetBackgroundRadius()
+                .padding(16.dp)
+        ) {
             item {
                 val date = agenda.date.toLocalDate()
                 val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
@@ -85,6 +95,10 @@ class SoonWidget @Inject constructor(private val repository: Repository) : Glanc
                     "✏️ ${date.format(formatter)}",
                     GlanceModifier.clickable(actionStartActivity(TasksActivity::class.java)),
                 )
+            }
+
+            item {
+                Spacer(GlanceModifier.height(8.dp))
             }
 
             items(agenda.todos) { todo ->
@@ -97,6 +111,10 @@ class SoonWidget @Inject constructor(private val repository: Repository) : Glanc
                     ),
                     modifier = GlanceModifier.fillMaxWidth(),
                     text = todo.task!!.name,
+                    colors = CheckBoxColors(
+                        checkedColor = if (isDarkTheme) Color.White else Color.Black,
+                        uncheckedColor = if (isDarkTheme) Color.White else Color(0xFF121212),
+                    ),
                 )
             }
         }
@@ -122,4 +140,19 @@ class CheckBoxClickAction : ActionCallback {
 
         entryPoint.repository().toggleComplete(todo)
     }
+}
+
+// TODO: Check if this actually works
+@Composable
+private fun GlanceModifier.appWidgetBackgroundRadius(): GlanceModifier =
+    if (Build.VERSION.SDK_INT >= 31) {
+        cornerRadius(android.R.dimen.system_app_widget_background_radius)
+    } else {
+        cornerRadius(16.dp)
+    }
+
+@Composable
+private fun isWidgetInDarkTheme(): Boolean {
+    val uiMode = LocalContext.current.resources.configuration.uiMode
+    return uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 }

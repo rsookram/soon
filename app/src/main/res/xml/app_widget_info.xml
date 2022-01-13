@@ -2,9 +2,13 @@
 <!-- Update period is 3 hours -->
 <appwidget-provider
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:minWidth="128dp"
-    android:minHeight="64dp"
-    android:resizeMode="vertical|horizontal"
+    android:minHeight="72dp"
     android:minResizeWidth="128dp"
-    android:minResizeHeight="64dp"
-    android:updatePeriodMillis="10800000"/>
+    android:minResizeHeight="72dp"
+    android:targetCellWidth="3"
+    android:targetCellHeight="2"
+    android:resizeMode="vertical|horizontal"
+    android:updatePeriodMillis="10800000"
+    tools:ignore="UnusedAttribute" />

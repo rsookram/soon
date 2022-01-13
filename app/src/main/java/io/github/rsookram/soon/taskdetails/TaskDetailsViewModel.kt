@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.rsookram.soon.ApplicationScope
 import io.github.rsookram.soon.Task
 import io.github.rsookram.soon.data.Repository
+import io.github.rsookram.soon.data.adjustedToday
 import io.github.rsookram.soon.data.toSoonDate
 import io.github.rsookram.soon.data.toSoonDaysOfWeek
 import io.github.rsookram.soon.tasks.localizedSchedule
@@ -44,7 +45,7 @@ class TaskDetailsViewModel @Inject constructor(
     // TODO: Save in saved state handle to handle proc death
     private val _task: MutableState<Task>
 
-    val initialDateSelection: LocalDate = LocalDate.now(clock).plusDays(1)
+    val initialDateSelection: LocalDate = clock.adjustedToday().plusDays(1)
 
     init {
         val bytes = savedStateHandle.get<String>("base64")?.decodeBase64()

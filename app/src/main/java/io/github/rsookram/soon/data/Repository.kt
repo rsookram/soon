@@ -67,7 +67,7 @@ class Repository @Inject constructor(
 
     suspend fun refreshAgenda() {
         dataStore.updateData { data ->
-            val today = LocalDate.now(clock)
+            val today = clock.adjustedToday()
 
             val agenda = data.agenda ?: defaultAgenda()
 
@@ -92,7 +92,7 @@ class Repository @Inject constructor(
                 // the existing tasks.
                 val finishedTasks = completeTodos.filter { it.task?.date != null }.map(Todo::task)
 
-                // Incomplete tasks get scheduled to the next day.
+                // Incomplete tasks get scheduled for the next day.
                 val incompleteTasks = incompleteTodos.mapNotNull(Todo::task)
                 val (tasksToUpdate, tasksToReschedule) = incompleteTasks.partition { it.date != null }
 

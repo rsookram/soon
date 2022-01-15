@@ -1,10 +1,11 @@
 package io.github.rsookram.soon.taskdetails
 
-import android.app.DatePickerDialog
+import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -12,17 +13,18 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.viewinterop.AndroidView
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.rememberInsetsPaddingValues
+import com.google.accompanist.insets.systemBarsPadding
 import com.google.accompanist.insets.ui.TopAppBar
 import io.github.rsookram.soon.R
 import io.github.rsookram.soon.Task
@@ -37,6 +39,12 @@ import java.time.LocalDate
 import java.time.OffsetTime
 import java.time.format.TextStyle
 import java.util.*
+
+enum class ScheduleType {
+    ON_DATE,
+    BY_DAY_OF_WEEK,
+    NTH_DAY_OF_MONTH,
+}
 
 @Composable
 fun TaskDetails(
@@ -99,30 +107,80 @@ fun TaskDetails(
             }
         },
     ) {
-        Column(Modifier.verticalScroll(rememberScrollState())) {
+        Column(
+            Modifier
+                .verticalScroll(rememberScrollState())
+                .systemBarsPadding(top = false)
+                .padding(bottom = 56.dp), // protection from the FAB
+        ) {
             OutlinedTextField(
                 value = task.name,
                 onValueChange = onNameChange,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp),
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 label = { Text(stringResource(R.string.task_name)) },
             )
 
-            Text(scheduledFor)
+            Text(
+                scheduledFor,
+                Modifier.padding(16.dp),
+                style = MaterialTheme.typography.h6,
+            )
 
-            // TODO: Don't use dialogs for this
-            // have radio buttons to select the schedule type
-            // then below that, show the controls for the currently selected type
+            var selectedOption by rememberSaveable { mutableStateOf(task.scheduleType()) }
 
-            // on date (date >= today)
-            ScheduleOnDate(task.date, defaultDateSelection, onDateSelect)
+            ScheduleOptions(selectedOption, onSelect = { selectedOption = it })
 
-            // days of week
-            ScheduleOnDaysOfWeek(task.daysOfWeek, onDaysOfWeekSelect)
+            when (selectedOption) {
+                ScheduleType.ON_DATE ->
+                    ScheduleOnDate(task.date, defaultDateSelection, onDateSelect)
+                ScheduleType.BY_DAY_OF_WEEK ->
+                    ScheduleOnDaysOfWeek(task.daysOfWeek, onDaysOfWeekSelect)
+                ScheduleType.NTH_DAY_OF_MONTH ->
+                    ScheduleEveryNthDayOfMonth(task.nthDayOfMonth, onNthDayOfMonthSelect)
+            }
+        }
+    }
+}
 
-            // nth day of month (1 - 28)
-            ScheduleEveryNthDayOfMonth(task.nthDayOfMonth, onNthDayOfMonthSelect)
+private fun Task.scheduleType(): ScheduleType =
+    when {
+        date != null -> ScheduleType.ON_DATE
+        daysOfWeek != null -> ScheduleType.BY_DAY_OF_WEEK
+        nthDayOfMonth != null -> ScheduleType.NTH_DAY_OF_MONTH
+        else -> error("Unknown schedule for $this")
+    }
+
+@Composable
+private fun ScheduleOptions(scheduleType: ScheduleType, onSelect: (ScheduleType) -> Unit) {
+    ScheduleType.values().forEach { type ->
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .selectable(
+                    selected = scheduleType == type,
+                    onClick = { onSelect(type) },
+                )
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .heightIn(min = 56.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            RadioButton(
+                selected = scheduleType == type,
+                onClick = { onSelect(type) },
+            )
+            Text(
+                text = stringResource(
+                    when (type) {
+                        ScheduleType.ON_DATE -> R.string.schedule_on_date
+                        ScheduleType.BY_DAY_OF_WEEK -> R.string.schedule_by_day_of_week
+                        ScheduleType.NTH_DAY_OF_MONTH -> R.string.schedule_on_nth_day_of_month
+                    }
+                ),
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(start = 16.dp)
+            )
         }
     }
 }
@@ -133,68 +191,43 @@ private fun ScheduleOnDate(
     defaultDateSelection: LocalDate,
     onDateSelect: (LocalDate) -> Unit,
 ) {
-    val context = LocalContext.current
-
     val initialDate = taskDate?.toLocalDate() ?: defaultDateSelection
 
-    val onDatePickerDialog = remember {
-        DatePickerDialog(
-            context,
-            { _, year, month, dayOfMonth ->
-                onDateSelect(LocalDate.of(year, month + 1, dayOfMonth))
-            },
-            initialDate.year,
-            initialDate.monthValue - 1,
-            initialDate.dayOfMonth,
-        ).apply {
-            datePicker.minDate =
-                defaultDateSelection.atTime(OffsetTime.MIN).toInstant().toEpochMilli()
+    Box(Modifier.fillMaxWidth()) {
+        AndroidView(
+            ::DatePicker,
+            Modifier.align(Alignment.Center),
+        ) { datePicker ->
+            datePicker.apply {
+                minDate =
+                    defaultDateSelection.atTime(OffsetTime.MIN).toInstant().toEpochMilli()
+
+                init(
+                    initialDate.year,
+                    initialDate.monthValue - 1,
+                    initialDate.dayOfMonth
+                ) { _, year, month, dayOfMonth ->
+                    onDateSelect(LocalDate.of(year, month + 1, dayOfMonth))
+                }
+            }
         }
     }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            onDatePickerDialog.dismiss()
-        }
-    }
-
-    Text(
-        stringResource(R.string.schedule_on_date),
-        Modifier
-            .fillMaxWidth()
-            .heightIn(56.dp)
-            .clickable { onDatePickerDialog.show() },
-    )
 }
 
 @Composable
 private fun ScheduleOnDaysOfWeek(
     taskDaysOfWeek: DaysOfWeek?,
-    onDaysOfWeekSelect: (EnumSet<DayOfWeek>) -> Unit
+    onDaysOfWeekSelect: (EnumSet<DayOfWeek>) -> Unit,
 ) {
-    var showDialog by rememberSaveable { mutableStateOf(false) }
+    val selectedDays = taskDaysOfWeek?.toEnumSet() ?: EnumSet.noneOf(DayOfWeek::class.java)
 
-    Text(
-        stringResource(R.string.schedule_by_day_of_week),
-        Modifier
-            .fillMaxWidth()
-            .heightIn(56.dp)
-            .clickable { showDialog = true },
+    Week(
+        selectedDays,
+        onDayClick = { day ->
+            selectedDays.toggle(day)
+            onDaysOfWeekSelect(selectedDays)
+        },
     )
-
-    if (showDialog) {
-        val selectedDays = taskDaysOfWeek?.toEnumSet() ?: EnumSet.noneOf(DayOfWeek::class.java)
-
-        Dialog(onDismissRequest = { showDialog = false }) {
-            Week(
-                selectedDays,
-                onDayClick = { day ->
-                    selectedDays.toggle(day)
-                    onDaysOfWeekSelect(selectedDays)
-                },
-            )
-        }
-    }
 }
 
 private fun EnumSet<DayOfWeek>.toggle(day: DayOfWeek) {
@@ -243,33 +276,20 @@ private fun ScheduleEveryNthDayOfMonth(
     taskNthDayOfMonth: Int?,
     onNthDayOfMonthSelect: (Int) -> Unit
 ) {
-    var showNthDayDialog by rememberSaveable { mutableStateOf(false) }
+    val minDay = 1
+    val maxDay = 28
 
-    Text(
-        stringResource(R.string.schedule_on_nth_day_of_month),
-        Modifier
-            .fillMaxWidth()
-            .heightIn(56.dp)
-            .clickable { showNthDayDialog = true },
+    var n by remember { mutableStateOf(taskNthDayOfMonth ?: minDay) }
+
+    Slider(
+        value = n.toFloat(),
+        onValueChange = { n = it.toInt() },
+        modifier = Modifier.padding(horizontal = 16.dp),
+        valueRange = minDay.toFloat()..maxDay.toFloat(),
+        // TODO: check for off by one error
+        steps = maxDay - minDay,
+        onValueChangeFinished = {
+            onNthDayOfMonthSelect(n)
+        },
     )
-
-    if (showNthDayDialog) {
-        Dialog(onDismissRequest = { showNthDayDialog = false }) {
-            val minDay = 1
-            val maxDay = 28
-
-            var n by remember { mutableStateOf(taskNthDayOfMonth ?: minDay) }
-
-            Slider(
-                value = n.toFloat(),
-                onValueChange = { n = it.toInt() },
-                valueRange = minDay.toFloat()..maxDay.toFloat(),
-                // TODO: check for off by one error
-                steps = maxDay - minDay,
-                onValueChangeFinished = {
-                    onNthDayOfMonthSelect(n)
-                },
-            )
-        }
-    }
 }

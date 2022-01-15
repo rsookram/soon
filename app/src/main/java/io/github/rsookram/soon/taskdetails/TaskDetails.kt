@@ -110,7 +110,7 @@ fun TaskDetails(
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
-                .systemBarsPadding(top = false)
+                .navigationBarsWithImePadding()
                 .padding(bottom = 56.dp), // protection from the FAB
         ) {
             OutlinedTextField(

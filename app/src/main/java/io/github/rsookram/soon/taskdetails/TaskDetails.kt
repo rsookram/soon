@@ -286,7 +286,6 @@ private fun ScheduleEveryNthDayOfMonth(
         onValueChange = { n = it.toInt() },
         modifier = Modifier.padding(horizontal = 16.dp),
         valueRange = minDay.toFloat()..maxDay.toFloat(),
-        // TODO: check for off by one error
         steps = maxDay - minDay,
         onValueChangeFinished = {
             onNthDayOfMonthSelect(n)
